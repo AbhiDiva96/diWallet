@@ -33,7 +33,9 @@ export async function POST(req: NextRequest){
         const token = jwt.sign({id: fetchUser.id, email: fetchUser.email}, process.env.JWT_SECRET as string, {
             expiresIn: '1h',
         })
-        return NextResponse.json({
+        
+
+        const response = NextResponse.json({
             message:'successfully loggedin', 
             fetchUser: {
                 id: fetchUser.id,
@@ -43,6 +45,8 @@ export async function POST(req: NextRequest){
             token
         },{status:200})
 
+      response.cookies.set('token', token, { httpOnly: true, path: '/' });
+      return response;
     }catch(error){
         console.error();
         return NextResponse.json({message:'error while signup'}, {status:500});

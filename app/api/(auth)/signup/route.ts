@@ -11,13 +11,13 @@ export async function POST(req: NextRequest){
         return NextResponse.json({message:'fields are required'}, {status:400})
     }
    
-    // const existingUser = await prisma.user.findMany({
-    //     where: {email}
-    // })
+    const existingUser = await prisma.user.findUnique({
+        where: {email}
+    })
 
-    // if(existingUser){
-    //     return NextResponse.json({message:'user already exists'}, {status:401})
-    // }
+    if(existingUser){
+        return NextResponse.json({message:'user already exists'}, {status:401})
+    }
 
     const hashedPassword = await bcrypt.hash(password,10);
 
