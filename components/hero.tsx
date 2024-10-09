@@ -11,7 +11,7 @@ export const Hero = () => {
           Take control of your finances, organize your spending, and stay on budget with ExpenseTracker.
         </p>
         <a
-          href="#"
+          href="/dashboard"
           className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-500 transition"
         >
           Get Started Now

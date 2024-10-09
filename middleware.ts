@@ -8,7 +8,7 @@ export function middleware(req: NextRequest) {
 
   // If there's no token, redirect to login page
   if (!token) {
-    return NextResponse.redirect(new URL('/login', req.url));
+    return NextResponse.redirect(new URL('/signin', req.url));
   }
 
   // If token exists, allow the user to access the dashboard

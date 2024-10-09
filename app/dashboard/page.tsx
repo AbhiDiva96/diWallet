@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface Transaction {
-  userId: string;
   amount: number;
   name: string;
   type: string;
@@ -14,7 +13,6 @@ interface Transaction {
 
 export default function Dashboard() {
   const [formData, setFormData] = useState<Transaction>({
-    userId: '',
     amount: 0,
     name: '',
     type: 'income', // default type set to 'income'
@@ -41,15 +39,24 @@ export default function Dashboard() {
     setSuccess(null);
 
     try {
-      const response = await axios.post('/api/transaction', formData);
-      setSuccess(response.data.message);
+
+      const updatedFormData = { ...formData, amount: Number(formData.amount) };
+      const response = await fetch('/api', {
+        method: 'POST', // Set the HTTP method
+        headers: {
+          'Content-Type': 'application/json', // Specify the content type
+        },
+        body: JSON.stringify(updatedFormData), // Send the updated form data as a JSON string
+      });
+
+     const data = await response.json();
+     setSuccess(data.message);
 
       // Update wallet amount after successful transaction
-      fetchWalletAmount();
+      // fetchWalletAmount();
 
       // Reset form data
       setFormData({
-        userId: '',
         amount: 0,
         name: '',
         type: 'income',
@@ -62,18 +69,18 @@ export default function Dashboard() {
   };
 
   // Fetch total wallet amount
-  const fetchWalletAmount = async () => {
-    try {
-      const response = await axios.get('/api/transaction/walletAmount'); // Assuming you have this API for fetching wallet amount
-      setWalletAmount(response.data.totalAmount);
-    } catch (error) {
-      console.error('Error fetching wallet amount', error);
-    }
-  };
+  // const fetchWalletAmount = async () => {
+  //   try {
+  //     const response = await axios.get('/api/added'); // Assuming you have this API for fetching wallet amount
+  //     setWalletAmount(response.data.totalAmount);
+  //   } catch (error) {
+  //     console.error('Error fetching wallet amount', error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchWalletAmount(); // Fetch wallet amount on component load
-  }, []);
+  // useEffect(() => {
+  //   fetchWalletAmount(); // Fetch wallet amount on component load
+  // }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-8">
@@ -93,20 +100,6 @@ export default function Dashboard() {
         {success && <p className="text-green-500 text-center mb-4">{success}</p>}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="userId" className="block text-sm font-medium text-gray-700">
-              User ID
-            </label>
-            <input
-              type="text"
-              id="userId"
-              name="userId"
-              value={formData.userId}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
 
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">

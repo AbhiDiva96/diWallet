@@ -48,6 +48,8 @@ export default function SignIn() {
     }
   };
 
+  
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-900 dark:to-gray-700">
       <div className="p-8 w-full max-w-md bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-md shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">

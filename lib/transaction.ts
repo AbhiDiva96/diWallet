@@ -8,7 +8,7 @@ export default class TransactionService{
      async addTransaction(userId:number, amount:number, transactionName: string, type: TransactionType): Promise<Transaction> {
            const newTransaction = await prisma.transaction.create({
              data: {
-                userId,
+               userId,
                 amount,
                 transactionName,
                 type

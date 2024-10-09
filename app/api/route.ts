@@ -5,28 +5,23 @@ import jwt from "jsonwebtoken"; // Import JWT for token decoding
 const transactionService = new TransactionService();
 
 export async function POST(req: NextRequest) {
-  const { amount, name, type } = await req.json();
 
-  // Check for missing fields
-  if (!amount || !name || !type) {
-    return NextResponse.json({ message: 'fields are required' }, { status: 400 });
-  }
+      const tokenCookie = req.cookies.get('token');
+      
+      if (!tokenCookie || !tokenCookie.value) {
+        return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
+      }
+      const token = tokenCookie.value; 
 
-  // Get the authorization header (JWT)
-  const authHeader = req.headers.get('authorization');
-  if (!authHeader) {
-    return NextResponse.json({ message: 'No authorization header provided' }, { status: 401 });
-  }
 
-  // Extract the token (Assuming it's a Bearer token)
-  const token = authHeader.split(' ')[1];
   try {
-    // Verify the JWT and extract the userId
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string); // Ensure to use the same secret used to sign the token
-    const userId = decoded.userId; // Assuming the JWT contains `userId`
-
-    // Add the transaction using the extracted userId
-    const newTransaction = await transactionService.addTransaction(userId, amount, name, type);
+       const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+        const userId = decodedToken.id;
+        const { amount, name, type } = await req.json();
+        if (!amount || !name || !type) {
+          return NextResponse.json({ message: 'fields are required' }, { status: 400 });
+        }
+       const newTransaction = await transactionService.addTransaction(userId , amount, name, type);
 
     return NextResponse.json({ message: 'new transaction added', transaction: newTransaction }, { status: 200 });
   } catch (error) {
