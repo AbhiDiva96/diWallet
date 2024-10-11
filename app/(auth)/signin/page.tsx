@@ -5,7 +5,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 export default function SignIn() {
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,20 +34,14 @@ export default function SignIn() {
     try {
       const response = await axios.post("/api/signin", formData);
       setSuccess(response.data.message); // Success message from API
-
-      // Store the token in localStorage or cookies
-      localStorage.setItem("token", response.data.token);
-
-      // Redirect to the homepage or dashboard
-      router.push("/dashboard"); // Assuming you have a dashboard page
+      
+      router.push("/dashboard");
     } catch (error: any) {
       setError(error.response?.data?.message || "An error occurred");
     } finally {
       setLoading(false);
     }
   };
-
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-900 dark:to-gray-700">

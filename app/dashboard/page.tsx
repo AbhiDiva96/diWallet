@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,7 +13,7 @@ export default function Dashboard() {
   const [formData, setFormData] = useState<Transaction>({
     amount: 0,
     name: '',
-    type: 'income', // default type set to 'income'
+    type: 'income',
   });
 
   const [loading, setLoading] = useState(false);
@@ -39,21 +37,22 @@ export default function Dashboard() {
     setSuccess(null);
 
     try {
-
       const updatedFormData = { ...formData, amount: Number(formData.amount) };
-      const response = await fetch('/api', {
-        method: 'POST', // Set the HTTP method
+      const response = await fetch('/api/transaction', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Specify the content type
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedFormData), // Send the updated form data as a JSON string
+        body: JSON.stringify(updatedFormData),
       });
 
-     const data = await response.json();
-     setSuccess(data.message);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message); // Handle error responses
+
+      setSuccess(data.message);
 
       // Update wallet amount after successful transaction
-      // fetchWalletAmount();
+      fetchWalletAmount();
 
       // Reset form data
       setFormData({
@@ -69,18 +68,19 @@ export default function Dashboard() {
   };
 
   // Fetch total wallet amount
-  // const fetchWalletAmount = async () => {
-  //   try {
-  //     const response = await axios.get('/api/added'); // Assuming you have this API for fetching wallet amount
-  //     setWalletAmount(response.data.totalAmount);
-  //   } catch (error) {
-  //     console.error('Error fetching wallet amount', error);
-  //   }
-  // };
+  const fetchWalletAmount = async () => {
+    try {
+      const response = await axios.get('/api/wallet-amount'); // Update the endpoint based on your API
+      setWalletAmount(response.data.totalAmount);
+    } catch (error) {
+      console.error('Error fetching wallet amount', error);
+      setError('Error fetching wallet amount');
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchWalletAmount(); // Fetch wallet amount on component load
-  // }, []);
+  useEffect(() => {
+    fetchWalletAmount(); // Fetch wallet amount on component load
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-8">
@@ -100,7 +100,6 @@ export default function Dashboard() {
         {success && <p className="text-green-500 text-center mb-4">{success}</p>}
 
         <form onSubmit={handleSubmit}>
-
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Transaction Name
@@ -111,7 +110,7 @@ export default function Dashboard() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
@@ -126,22 +125,21 @@ export default function Dashboard() {
               name="amount"
               value={formData.amount}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-              Transaction Type
+              Type
             </label>
             <select
               id="type"
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="income">Income</option>
               <option value="expense">Expense</option>
@@ -151,9 +149,9 @@ export default function Dashboard() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
-            {loading ? 'Processing...' : 'Add Transaction'}
+            {loading ? 'Adding...' : 'Add Transaction'}
           </button>
         </form>
       </div>
