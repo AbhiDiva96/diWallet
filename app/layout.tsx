@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import AuthProvider from "@/context/authProvider";
+import { TotalAmountProvider } from "@/context/amountProvider";
 
 
 const geistSans = localFont({
@@ -33,8 +34,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
        <AuthProvider>
+        <TotalAmountProvider>
           <Navbar/>
           {children}
+          </TotalAmountProvider>
          </AuthProvider>
       </body>
     </html>
