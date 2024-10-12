@@ -20,6 +20,7 @@ model User {
    passwordHash          String
    verificationToken     String?
    isverified            Boolean   @default(false)
+   totalAmount           Int      @default(0)
    transaction          Transaction[]
 }
 

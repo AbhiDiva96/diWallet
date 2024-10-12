@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import useRouter from Next.js for navigation
+import axios from 'axios';
 
 export default function Signup() {
   const router = useRouter(); // Initialize router for redirecting
@@ -41,21 +42,19 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const response = await axios.post('/api/signup', {
+        name,
+        email,
+        password
+      })
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         setSuccess('User created successfully!');
-        setFormData({ name: '', email: '', password: '' }); // Clear the form on success
+        router.push('/dashboard');
+        setFormData({ name: '', email: '', password: '' });
+         // Clear the form on success
       } else {
-        setError(result.message || 'Something went wrong');
+        setError(response.data.message || 'Something went wrong');
       }
     } catch (error) {
       setError('An error occurred while submitting the form');

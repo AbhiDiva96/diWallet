@@ -3,6 +3,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+// import email from "next-auth/providers/email";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
@@ -32,10 +34,19 @@ export default function SignIn() {
     setSuccess(null);
 
     try {
-      const response = await axios.post("/api/signin", formData);
-      setSuccess(response.data.message); // Success message from API
-      
-      router.push("/dashboard");
+      const result = await signIn('credentials', {
+      redirect: false,
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      // If successful, redirect to the homepage
+      router.push('/dashboard');
+    }
+
     } catch (error: any) {
       setError(error.response?.data?.message || "An error occurred");
     } finally {

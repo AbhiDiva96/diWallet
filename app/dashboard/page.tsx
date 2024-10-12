@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface Transaction {
   amount: number;
@@ -13,7 +15,7 @@ export default function Dashboard() {
   const [formData, setFormData] = useState<Transaction>({
     amount: 0,
     name: '',
-    type: 'income',
+    type: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -21,12 +23,45 @@ export default function Dashboard() {
   const [success, setSuccess] = useState<string | null>(null);
   const [walletAmount, setWalletAmount] = useState<number>(0);
 
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/signin');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    const fetchWalletAmount = async () => {
+      try {
+        const response = await axios.get('/api/transactions');
+        setWalletAmount(response.data.totalTransations);
+      } catch (error) {
+        setError('Failed to fetch wallet amount');
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWalletAmount(); // Fetch wallet amount on component load
+  }, [session, status]);
+
+  const handleTypeChange = (type: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      type,
+    }));
+  };
+
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: name === 'amount' ? Number(value) : value, // Ensure amount is converted to number
+    }));
   };
 
   // Handle form submission
@@ -37,22 +72,14 @@ export default function Dashboard() {
     setSuccess(null);
 
     try {
-      const updatedFormData = { ...formData, amount: Number(formData.amount) };
-      const response = await fetch('/api/transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedFormData),
-      });
+      const response = await axios.post('/api', formData); // formData has the correct number type for amount
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message); // Handle error responses
-
-      setSuccess(data.message);
+      if (response.status === 200) {
+        setSuccess(response.data.message);
+      }
 
       // Update wallet amount after successful transaction
-      fetchWalletAmount();
+      // You can re-fetch wallet amount if needed
 
       // Reset form data
       setFormData({
@@ -60,54 +87,65 @@ export default function Dashboard() {
         name: '',
         type: 'income',
       });
+
+      
     } catch (error: any) {
       setError(error.response?.data?.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
+ 
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
-  // Fetch total wallet amount
-  const fetchWalletAmount = async () => {
-    try {
-      const response = await axios.get('/api/wallet-amount'); // Update the endpoint based on your API
-      setWalletAmount(response.data.totalAmount);
-    } catch (error) {
-      console.error('Error fetching wallet amount', error);
-      setError('Error fetching wallet amount');
-    }
-  };
-
-  useEffect(() => {
-    fetchWalletAmount(); // Fetch wallet amount on component load
-  }, []);
+  if (!session) {
+    return null;
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-8">
-      {/* Total Wallet Section */}
+    <div className="flex flex-col items-center dark:bg-gray-900 justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md mb-8 text-center">
         <h2 className="text-xl font-semibold text-gray-700">Total Wallet Amount</h2>
-        <p className="text-3xl text-green-500 font-bold mt-2">
-          ${walletAmount.toFixed(2)}
+        <p className={`text-3xl ${walletAmount < 0 ? 'text-red-500' : 'text-green-500'} font-bold mt-2`}>
+          {`₹${walletAmount}`}
         </p>
       </div>
 
       {/* Transaction Form */}
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-semibold text-center text-gray-700 mb-6">Add Transaction</h1>
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md dark:bg-gray-700/20">
+        <h1 className="text-2xl font-semibold text-center text-gray-700 dark:text-white mb-6">Add Transaction</h1>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {success && <p className="text-green-500 text-center mb-4">{success}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-white">
+              Amount
+            </label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              placeholder="Enter Amount"
+              value={formData.amount === 0 ? "" : formData.amount}
+              onChange={handleChange}
+               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 appearance-none custom-number-input"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-white">
               Transaction Name
             </label>
             <input
               type="text"
               id="name"
               name="name"
+              placeholder="Enter Name"
               value={formData.name}
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -116,34 +154,26 @@ export default function Dashboard() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-              Amount
-            </label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-              Type
-            </label>
-            <select
-              id="type"
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
+            <div className="flex gap-4 py-4">
+              <button
+                type="button"
+                onClick={() => handleTypeChange('income')}
+                className={`flex-1 px-4 py-2 rounded-md focus:outline-none ${
+                  formData.type === 'income' ? 'bg-green-500 text-white' : 'border border-green-500 bg-green-400/20 text-green-500'
+                }`}
+              >
+                Income
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTypeChange('expense')}
+                className={`flex-1 px-4 py-2 rounded-md focus:outline-none ${
+                  formData.type === 'expense' ? 'bg-red-500 text-white' : 'border border-orange-500 bg-orange-400/20 text-orange-500'
+                }`}
+              >
+                Expense
+              </button>
+            </div>
           </div>
 
           <button
