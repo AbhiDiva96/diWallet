@@ -5,6 +5,7 @@ import { DarkModeToggle } from './DarkModeToggle';
 import { useRouter } from 'next/navigation';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useTotalAmount } from '@/context/amountProvider';
+import { AvatarToggle } from './ui/Avatar';
 
 export const Navbar = () => {
   const { data: session } = useSession();
@@ -18,7 +19,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md">
+    <nav className="bg-white dark:bg-gray-900 shadow-md px-4">
       <div className="container mx-auto flex justify-between items-center py-4">
         <Link href="/">
           <div className="flex justify-center text-lg text-black dark:text-white font-bold md:text-xl">
@@ -26,10 +27,14 @@ export const Navbar = () => {
           </div>
         </Link>
 
+     
+
         <div className="flex space-x-4">
+           <DarkModeToggle />
           {session ? (
+            
             <div className="flex items-center space-x-4">
-              <div className=' flex justify-center gap-2 dark:bg-gray-400/20 p-2 rounded border border-slate-400/20'>
+                 <div className=' flex justify-center gap-2 dark:bg-gray-400/20 p-2 rounded border border-slate-400/20'>
                 <div className='flex justify-center gap-2 dark:text-white'>
                    <AccountBalanceWalletIcon/>
                 </div>
@@ -38,19 +43,14 @@ export const Navbar = () => {
                     {`₹${totalAmount}`}
                   </p>
                 </div>
-              </div>
-
-             
-              <span className="text-black dark:text-white font-bold">{session.user?.name}</span>
-              <button onClick={handleLogout} className="border border-gray-800/20 text-lg text-black dark:text-white font-bold md:text-xl p-2 rounded">
-                Logout
-              </button>
+              </div>  
+                 <AvatarToggle username={`${session.user?.name}`} onLogout={handleLogout}/>
             </div>
           ) : (
             <>
-              <button onClick={() => signIn()} className="flex justify-center border border-gray-800/20 text-lg text-black dark:text-white font-bold md:text-xl p-2 rounded">
+              {/* <button onClick={() => signIn()} className="flex justify-center border border-gray-800/20 text-lg text-black dark:text-white font-bold md:text-xl p-2 rounded">
                 Login
-              </button>
+              </button> */}
               <Link href="/signup">
                 <button className="flex justify-center border border-gray-800/20 text-lg text-black dark:text-white font-bold md:text-xl p-2 rounded">
                   Sign Up
@@ -58,7 +58,7 @@ export const Navbar = () => {
               </Link>
             </>
           )}
-          <DarkModeToggle />
+         
         </div>
       </div>
     </nav>

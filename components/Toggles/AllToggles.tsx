@@ -1,46 +1,99 @@
+'use client'
 
-export const AllToggle= () => {
+import { useEffect, useState } from 'react'
+import CloseIcon from '@mui/icons-material/Close';
+import ReceiptLongTwoToneIcon from '@mui/icons-material/ReceiptLongTwoTone';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
+import { AvatarToggle } from '../ui/Avatar';
+import { Transaction } from '@/types/types';
 
-    return (
-        <div>
+export const  AllToggle = () => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [history, setHistory] = useState<Transaction[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-     
-<button data-modal-target="progress-modal" data-modal-toggle="progress-modal" className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-  Toggle modal
-</button>
+  const { status, data: session } = useSession()
 
-<div id="progress-modal"  aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div className="relative p-4 w-full max-w-md max-h-full">
+  const togglePopup = () => setIsOpen(!isOpen)
+
+  useEffect(() => {
+    const getTotalTransaction = async () => {
+      if (status === 'authenticated') {
+        setIsLoading(true)
+        setError(null)
+        try {
+          const response = await axios.get('/api/transactions/history')
+          setHistory(response.data.accountHistory)
+        } catch (error) {
+          console.error('Failed to fetch transaction history:', error)
+          setError('Failed to load transaction history. Please try again.')
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    getTotalTransaction()
+  }, [status, session])
+
+  return (
+
+     <div className="relative  flex items-center justify-center pb-4">
+       <button
+         onClick={togglePopup}
+         className="p-4 dark:bg-gray-800 border border-slate-400/20 rounded dark:text-white "
+       >
+         <ReceiptLongTwoToneIcon/>
+
+       </button>
+
         
-        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <button type="button" className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="progress-modal">
-                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                </svg>
-                <span className="sr-only">Close modal</span>
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg w-full max-w-md mx-auto relative">
+            <button
+              onClick={togglePopup}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              aria-label="Close popup"
+            >
+              <CloseIcon className="h-6 w-6" />
             </button>
-            <div className="p-4 md:p-5">
-                <svg className="w-10 h-10 text-gray-400 dark:text-gray-500 mb-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
-                    <path d="M8 5.625c4.418 0 8-1.063 8-2.375S12.418.875 8 .875 0 1.938 0 3.25s3.582 2.375 8 2.375Zm0 13.5c4.963 0 8-1.538 8-2.375v-4.019c-.052.029-.112.054-.165.082a8.08 8.08 0 0 1-.745.353c-.193.081-.394.158-.6.231l-.189.067c-2.04.628-4.165.936-6.3.911a20.601 20.601 0 0 1-6.3-.911l-.189-.067a10.719 10.719 0 0 1-.852-.34 8.08 8.08 0 0 1-.493-.244c-.053-.028-.113-.053-.165-.082v4.019C0 17.587 3.037 19.125 8 19.125Zm7.09-12.709c-.193.081-.394.158-.6.231l-.189.067a20.6 20.6 0 0 1-6.3.911 20.6 20.6 0 0 1-6.3-.911l-.189-.067a10.719 10.719 0 0 1-.852-.34 8.08 8.08 0 0 1-.493-.244C.112 6.035.052 6.01 0 5.981V10c0 .837 3.037 2.375 8 2.375s8-1.538 8-2.375V5.981c-.052.029-.112.054-.165.082a8.08 8.08 0 0 1-.745.353Z"/>
-                </svg>
-                <h3 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">Approaching Full Capacity</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">Choosing the right server storage solution is essential for maintaining data integrity.</p>
-                <div className="flex justify-between mb-1 text-gray-500 dark:text-gray-400">
-                    <span className="text-base font-normal">My storage</span>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white">376,3 of 500 GB used</span>
-                </div>
-                
+            <div className="p-6">
+              <h2 className="text-2xl dark:text-white font-bold mb-4">Transaction History</h2>
+              <div className="overflow-y-auto max-h-[70vh]">
+                {isLoading ? (
+                  <p className="text-center dark:text-gray-300">Loading transactions...</p>
+                ) : error ? (
+                  <p className="text-center text-red-500 dark:text-red-400">{error}</p>
+                ) : history.length === 0 ? (
+                  <p className="text-center dark:text-gray-300">No transactions found.</p>
+                ) : (
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {history.slice(0).reverse().map((transaction) => (
+                      <li key={transaction.id} className="py-4 px-2">
+                        <div className="flex justify-between">
+                          <div className=''>
+                            <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{transaction.transactionName}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{new Date(transaction.createdAt).toLocaleString()}</p>
+                          </div>
+                          <div className='flex justify-center'>
+                          <p className={`text-sm font-semibold ${transaction.type === 'income' ? 'text-green-500'  : 'text-red-500' }`}>
+                          {transaction.type=== 'income' ? `+₹${transaction.amount.toFixed(2)}` :  `-₹${transaction.amount.toFixed(2)}`}
+                          </p>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
             
-                <div className="flex items-center mt-6 space-x-4 rtl:space-x-reverse">
-                    <button data-modal-hide="progress-modal" type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upgrade to PRO</button>
-                    <button data-modal-hide="progress-modal" type="button" className="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</button>
-                </div>
-           </div>
+          </div>
         </div>
+      )}
     </div>
-</div>
-</div>
-   
-
-)
-}
+  )
+  }

@@ -31,7 +31,7 @@ export const DarkModeToggle = () => {
   return (
     <button
       onClick={toggleDarkMode}
-      className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 p-2 rounded-full"
+      className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200  rounded-full  px-3"
     >
       {darkMode ? '🌙' : '☀️'}
     </button>

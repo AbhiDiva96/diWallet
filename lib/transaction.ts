@@ -37,6 +37,7 @@ export default class TransactionService {
     const transactions = await prisma.transaction.findMany({
       where: { userId },
       select: {
+        id: true,
         amount: true,
         type: true,
         transactionName: true,
