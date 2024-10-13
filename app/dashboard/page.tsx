@@ -56,7 +56,6 @@ export default function Dashboard() {
 
     try {
       const response = await axios.post('/api', formData);
-
       if (response.status === 200) {
         setSuccess(response.data.message);
         // Update total amount based on transaction type

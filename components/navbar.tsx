@@ -48,9 +48,6 @@ export const Navbar = () => {
             </div>
           ) : (
             <>
-              {/* <button onClick={() => signIn()} className="flex justify-center border border-gray-800/20 text-lg text-black dark:text-white font-bold md:text-xl p-2 rounded">
-                Login
-              </button> */}
               <Link href="/signup">
                 <button className="flex justify-center border border-gray-800/20 text-lg text-black dark:text-white font-bold md:text-xl p-2 rounded">
                   Sign Up

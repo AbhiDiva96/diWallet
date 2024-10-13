@@ -34,12 +34,11 @@ export const  AvatarToggle = ({ username, onLogout }: AvatarToggleProps) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full"
+        className="flex items-center bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full "
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-     
-          <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full bg-blue-500/20 border border-slate-400/20 flex items-center justify-center">
             <span className="text-white text-sm font-medium">
               {username.charAt(0).toUpperCase()}
             </span>

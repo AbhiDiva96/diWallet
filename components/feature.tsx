@@ -4,7 +4,7 @@ export const Features = () => {
     <section className="py-16 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto text-center">
         <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-10">Premium Features</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
           <div className="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-lg">
             <h4 className="text-xl font-bold text-gray-900 dark:text-white">Expense Categorization</h4>
             <p className="text-gray-600 dark:text-gray-400">

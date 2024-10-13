@@ -41,16 +41,17 @@ export const  AllToggle = () => {
   return (
 
      <div className="relative  flex items-center justify-center pb-4">
-       <button
-         onClick={togglePopup}
-         className="p-4 dark:bg-gray-800 border border-slate-400/20 rounded dark:text-white "
-       >
-         <ReceiptLongTwoToneIcon/>
+      <div className='flex flex-col'>
+            <button
+                onClick={togglePopup}
+                className="p-4 dark:bg-gray-800 border border-slate-400/20 rounded dark:text-white "
+            >
+                <ReceiptLongTwoToneIcon/>
+            </button>
+           <span className='flex justify-center dark:text-white '>History</span>
+        </div> 
 
-       </button>
-
-        
-      {isOpen && (
+    {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-800 rounded-lg w-full max-w-md mx-auto relative">
             <button
