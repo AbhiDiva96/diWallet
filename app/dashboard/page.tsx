@@ -68,8 +68,9 @@ export default function Dashboard() {
         name: '',
         type: '',
       });
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'An error occurred');
+    } catch (error) {
+      console.error(error);
+      setError('An error occurred');
       setFormData({
         amount: 0,
         name: '',

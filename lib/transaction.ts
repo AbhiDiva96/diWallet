@@ -1,6 +1,11 @@
 import { prisma } from "./prisma";
 import { Transaction, TransactionType } from "@/types/types";
 
+// interface Transaction {
+//   amount: number;
+//   type: "income" | "in" | "expense"; // Add more types if needed
+// }
+
 export default class TransactionService {
   // Adds a new transaction
   async addTransaction(
@@ -48,8 +53,8 @@ export default class TransactionService {
     return transactions;
   }
 
-  // Calculates total amount based on income/expense
-  async calculateTotalAmount(transactions: any[]) {
+   // Calculates total amount based on income/expense
+  async calculateTotalAmount(transactions: Transaction[]): Promise<number> {
     let totalAmount = 0;
 
     transactions.forEach((transaction) => {
@@ -65,11 +70,14 @@ export default class TransactionService {
     return totalAmount;
   }
 
+ 
   // Fetches total amount for a user by summing transactions
   async getTotalAmount(userId: number) {
     const transactions = await this.getTransactions(userId);
+    
     return this.calculateTotalAmount(transactions);
   }
+
 
   // Updates the user's total amount after adding a transaction
   async updateUserTotalAmount(

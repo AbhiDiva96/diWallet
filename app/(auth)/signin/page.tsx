@@ -46,8 +46,9 @@ export default function SignIn() {
       router.push('/dashboard');
     }
 
-    } catch (error: any) {
-      setError(error.response?.data?.message || "An error occurred");
+    } catch (error) {
+      console.error(error)
+      setError("An error occurred");
     } finally {
       setLoading(false);
     }

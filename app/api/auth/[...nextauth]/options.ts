@@ -4,8 +4,8 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from 'bcrypt'
 import { JWT } from "next-auth/jwt";
 
-import { User } from "next-auth";
-
+ import { User } from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 
 export const authOption:NextAuthOptions = {
      providers: [
@@ -15,7 +15,7 @@ export const authOption:NextAuthOptions = {
                 email: { label: "Email", type: "username" },
                 password: { label: "Password", type: "password" }
                 },
-                  async authorize(credentials): Promise<User | any> {
+                  async authorize(credentials): Promise<User> {
                     if (!credentials?.email || !credentials?.password) {
                             throw new Error('Please enter your email and password');
                             }
@@ -36,9 +36,12 @@ export const authOption:NextAuthOptions = {
                     throw new Error('password is not valid')
                    }
 
-                   return {id: Number(user.id), email: user.email, name: user.name}
-
-                  }
+                   return {
+                    id: user.id,
+                   email: user.email, 
+                   name: user.name
+                   }
+              }
         }),
    
    
@@ -51,15 +54,15 @@ pages: {
 
 
 callbacks: {
-    async jwt({ token, user} : {token: JWT , user: User  }) {
+    async jwt({ token, user} : {token: JWT , user: User | AdapterUser}) {
         if(user){
-            token.id = user.id;
+          token.id = user.id;
         }
         return token;
       },
-    async session({session, token}: {session: any, token: JWT}){
+    async session({session, token}: {session: Session, token: JWT}){
         if(token){
-            session.user.id = token.id;
+          (session.user as { id: string }).id = token.id as string;
         }
         return session;
     }
@@ -69,9 +72,9 @@ session: {
     strategy: "jwt",
 },
 
- jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
+//  jwt: {
+//     secret: process.env.NEXTAUTH_SECRET,
+//   },
 
-// secret: process.env.NEXTAUTH_SECRET
+ secret: process.env.NEXTAUTH_SECRET
 }
