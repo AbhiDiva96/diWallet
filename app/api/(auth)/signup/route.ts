@@ -23,7 +23,7 @@ export async function POST(req: NextRequest){
 
     try{
          
-      const userCreate = await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
             name,
             email,
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest){
         }
       })
 
-        return NextResponse.json({message:'user created successfully', userCreate}, {status:200})
+        return NextResponse.json({message:'user created successfully', user}, {status:200})
     }catch(error){
         console.error();
         return NextResponse.json({message:'geting error while submiting', error}, {status:500})
