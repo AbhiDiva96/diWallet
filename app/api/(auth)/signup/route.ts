@@ -34,6 +34,6 @@ export async function POST(req: NextRequest){
         return NextResponse.json({message:'user created successfully', userCreate}, {status:200})
     }catch(error){
         console.error();
-        return NextResponse.json({message:'geting error while submiting'}, {status:500})
+        return NextResponse.json({message:'geting error while submiting', error}, {status:500})
     }
 }

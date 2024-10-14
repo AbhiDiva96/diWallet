@@ -21,6 +21,6 @@ export async function GET(req: NextRequest){
 
     }catch(error){
         console.error();
-        return NextResponse.json({message:'could find any trantions'}, {status:500})
+        return NextResponse.json({message:'could find any trantions', error: error}, {status:500})
     }
 }

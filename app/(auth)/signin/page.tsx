@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 // import email from "next-auth/providers/email";
@@ -113,7 +112,7 @@ export default function SignIn() {
         {/* Forgot Password and Sign Up Links */}
         <div className="mt-4 text-center">
           <p className="text-gray-700 dark:text-gray-300">
-            Don't have an account?
+            {`Don't have an account?`}
             <a
               href="/signup"
               className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium hover:underline"

@@ -5,7 +5,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import ReceiptLongTwoToneIcon from '@mui/icons-material/ReceiptLongTwoTone';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-import { AvatarToggle } from '../ui/Avatar';
 import { Transaction } from '@/types/types';
 
 export const  AllToggle = () => {

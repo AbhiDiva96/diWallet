@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { DarkModeToggle } from './DarkModeToggle';
 import { useRouter } from 'next/navigation';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';

@@ -1,19 +1,21 @@
 import { prisma } from "@/lib/prisma"
-import NextAuth, { NextAuthOptions } from "next-auth"
+import  { NextAuthOptions, Session } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from 'bcrypt'
-import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
+
+import { User } from "next-auth";
+
 
 export const authOption:NextAuthOptions = {
      providers: [
         CredentialsProvider({
-              name: 'Credentials',
+              name: 'credentials',
                 credentials: {
                 email: { label: "Email", type: "username" },
                 password: { label: "Password", type: "password" }
                 },
-                  async authorize(credentials): Promise<any> {
+                  async authorize(credentials): Promise<User | any> {
                     if (!credentials?.email || !credentials?.password) {
                             throw new Error('Please enter your email and password');
                             }
@@ -34,26 +36,28 @@ export const authOption:NextAuthOptions = {
                     throw new Error('password is not valid')
                    }
 
-                   return {id: user.id, email: user.email, name:user.name}
+                   return {id: Number(user.id), email: user.email, name: user.name}
 
                   }
         }),
    
-    // ...add more providers here
    
 ],
 pages: {
     signIn: '/signin',
     signOut: '/signout'
 },
+
+
+
 callbacks: {
-    async jwt({ token, user} : {token: JWT , user: any}) {
+    async jwt({ token, user} : {token: JWT , user: User  }) {
         if(user){
             token.id = user.id;
         }
         return token;
       },
-    async session({session, token}: {session:any, token: JWT}){
+    async session({session, token}: {session: any, token: JWT}){
         if(token){
             session.user.id = token.id;
         }
@@ -65,5 +69,9 @@ session: {
     strategy: "jwt",
 },
 
-secret: process.env.NEXTAUTH_SECRET
+ jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
+
+// secret: process.env.NEXTAUTH_SECRET
 }

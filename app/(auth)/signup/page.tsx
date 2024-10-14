@@ -57,6 +57,7 @@ export default function Signup() {
         setError(response.data.message || 'Something went wrong');
       }
     } catch (error) {
+      console.error(error);
       setError('An error occurred while submitting the form');
     } finally {
       setLoading(false);

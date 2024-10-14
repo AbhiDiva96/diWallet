@@ -23,6 +23,6 @@ export async function GET(req: NextRequest){
          
     }catch(error){
         console.error();
-        return NextResponse.json({message: 'error while fetching'}, {status:500});
+        return NextResponse.json({message: 'error while fetching', error : error}, {status:500});
     }
 }
