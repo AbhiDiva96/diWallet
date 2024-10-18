@@ -36,9 +36,9 @@ export const authOption:NextAuthOptions = {
                    }
 
                    return {
-                    id: user.id.toString(),
-                   email: user.email, 
-                   name: user.name
+                    id: user.id,
+                    email: user.email, 
+                    name: user.name
                    }
               }
         }),
@@ -53,15 +53,16 @@ pages: {
 
 
 callbacks: {
-    async jwt({ token, user} : {token: JWT , user: User }) {
+  //jwt callback basically generate the token on the behalf of user return payload such as id name and email
+    async jwt({ token, user} : any) {
         if(user){
-          token.id = user.id.toString();
+          token.id = user.id;
         }
         return token;
       },
-    async session({session, token}: {session: Session, token: JWT}){
+    async session({session, token}: {session: any, token: JWT}){
         if(token){
-          (session.user as { id: string }).id = token.id as string;
+          session.user.id = token.id;
         }
         return session;
     }

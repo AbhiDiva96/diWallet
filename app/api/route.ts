@@ -10,14 +10,14 @@ export async function POST(req: NextRequest) {
      
           const token = await getToken({req, secret})
 
-          if(!token || typeof token.id !== 'number' ){
+          if(!token ){
              return NextResponse.json({message:'unauthorised'},{status:401})
           }
 
        
   try {
 
-         const userId : number  = token.id;
+         const userId : any = token.id;
         const { amount, name, type } = await req.json();
         if (!amount || !name || !type) {
           return NextResponse.json({ message: 'fields are required' }, { status: 400 });
