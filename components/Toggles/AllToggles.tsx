@@ -24,7 +24,9 @@ export const  AllToggle = () => {
         setError(null)
         try {
           const response = await axios.get('/api/transactions/history')
-          setHistory(response.data.accountHistory)
+          setTimeout(() => {
+            setHistory(response.data.accountHistory)
+          }, 1000);
         } catch (error) {
           console.error('Failed to fetch transaction history:', error)
           setError('Failed to load transaction history. Please try again.')

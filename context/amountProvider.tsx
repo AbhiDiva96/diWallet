@@ -31,6 +31,7 @@ export const TotalAmountProvider: React.FC<TotalAmountProviderProps> = ({ childr
  const { data: session, status } = useSession();
  
    useEffect(() => {
+
     const fetchWalletAmount = async () => {
       try {
         const response = await axios.get('/api/transactions'); 
@@ -41,8 +42,9 @@ export const TotalAmountProvider: React.FC<TotalAmountProviderProps> = ({ childr
             console.error()
     }
     };
-    fetchWalletAmount(); // Fetch wallet amount on component load
-  }, [session, status]);
+    fetchWalletAmount(); 
+    
+  }, [status, session] );
 
     const contextValue = React.useMemo(() => ({ totalAmount, setTotalAmount }), [totalAmount]);
 

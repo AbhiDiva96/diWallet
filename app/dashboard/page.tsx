@@ -33,6 +33,7 @@ export default function Dashboard() {
     }
   }, [status, router]);
 
+
   const handleTypeChange = (type: string) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -55,7 +56,8 @@ export default function Dashboard() {
     setSuccess(null);
 
     try {
-      const response = await axios.post('/api', formData);
+
+       const response = await axios.post('/api', formData);
       if (response.status === 200) {
         setSuccess(response.data.message);
         // Update total amount based on transaction type
@@ -80,6 +82,8 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+ 
  
   if (status === 'loading') {
     return <div>Loading...</div>;
@@ -175,3 +179,8 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+// export const addTotalAmount = async () => {
+
+// }

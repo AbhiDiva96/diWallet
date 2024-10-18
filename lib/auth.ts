@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import  { NextAuthOptions, Session } from "next-auth"
+import  { NextAuthOptions} from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from 'bcrypt'
 import { JWT } from "next-auth/jwt";
@@ -60,7 +60,7 @@ callbacks: {
         }
         return token;
       },
-    async session({session, token}: {session: any, token: JWT}){
+    async session({session, token}: {session: any, token: JWT}):Promise<any>{
         if(token){
           session.user.id = token.id;
         }

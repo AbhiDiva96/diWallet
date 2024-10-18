@@ -17,12 +17,12 @@ export async function POST(req: NextRequest) {
        
   try {
 
-         const userId : any = token.id;
+         const userId = token.id;
         const { amount, name, type } = await req.json();
         if (!amount || !name || !type) {
           return NextResponse.json({ message: 'fields are required' }, { status: 400 });
         }
-       const newTransaction = await transactionService.addTransaction(userId , amount, name, type);
+       const newTransaction = await transactionService.addTransaction(userId as number , amount, name, type);
     return NextResponse.json({ message: 'new transaction added', transaction: newTransaction }, { status: 200 });
   } catch (error) {
     console.error(error);
